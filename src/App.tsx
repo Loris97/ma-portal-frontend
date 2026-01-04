@@ -1,23 +1,23 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
 import TestAPI from './pages/TestAPI';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Route Login */}
+        <Route path="/login" element={<Login />} />
+        
+        {/* Route Dashboard (protetta - per ora accessibile) */}
+        <Route path="/dashboard" element={<Dashboard />} />
+        
+        {/* Route Test API (per debug) */}
         <Route path="/test" element={<TestAPI />} />
-        <Route path="/" element={
-          <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-            <div className="bg-white p-8 rounded-lg shadow-2xl">
-              <h1 className="text-3xl font-bold text-gray-800 mb-4">
-                🚀 M&A Portal Frontend
-              </h1>
-              <a href="/test" className="text-blue-600 underline">
-                Vai alla pagina di test API →
-              </a>
-            </div>
-          </div>
-        } />
+        
+        {/* Default: redirect a login */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
   );
