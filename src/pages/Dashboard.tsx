@@ -1,7 +1,36 @@
 import { useAuthStore } from '../store/authStore';
+import { useEffect, useState } from 'react';
+import { societaApi } from '../api/societaApi';
+import { Societa } from '../types/api.types';
+import SocietaTable from '../components/tables/SocietaTable';
 
 export default function Dashboard() {
   const { user, logout } = useAuthStore();
+  
+  // State per lista società
+  const [societa, setSocieta] = useState<Societa[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string>('');
+
+  // Carica società al mount
+  useEffect(() => {
+    const fetchSocieta = async () => {
+      try {
+        setIsLoading(true);
+        setError('');
+        
+        const result = await societaApi.getAll();
+        setSocieta(result.data as Societa[]);
+        
+      } catch (err: any) {
+        setError(err.response?.data?.error || 'Errore caricamento società');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchSocieta();
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -22,12 +51,9 @@ export default function Dashboard() {
           <div className="flex items-center gap-4">
             {user && (
               <div className="text-sm text-right">
-                {/* Username */}
                 <p className="font-semibold text-gray-700">
                   {user.username}
                 </p>
-                
-                {/* Role Badge */}
                 <span className={`
                   inline-block px-2 py-1 rounded text-xs font-semibold mt-1
                   ${user.role === 'admin' 
@@ -40,7 +66,6 @@ export default function Dashboard() {
               </div>
             )}
             
-            {/* Logout Button */}
             <button
               onClick={handleLogout}
               className="
@@ -61,68 +86,26 @@ export default function Dashboard() {
 
       {/* Content */}
       <main className="max-w-7xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow-md p-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">
-            ✅ Login Riuscito!
+        
+        {/* Welcome Card */}
+        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            👋 Benvenuto, {user?.username}!
           </h2>
-          
-          {/* Card info utente */}
-          {user && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-blue-900 mb-4">
-                Informazioni Utente
-              </h3>
-              
-              <dl className="space-y-2">
-                {/* ID */}
-                <div className="flex gap-2">
-                  <dt className="font-medium text-gray-700 w-32">ID:</dt>
-                  <dd className="text-gray-900">{user.id}</dd>
-                </div>
-                
-                {/* Username */}
-                <div className="flex gap-2">
-                  <dt className="font-medium text-gray-700 w-32">Username:</dt>
-                  <dd className="text-gray-900">{user.username}</dd>
-                </div>
-                
-                {/* Role */}
-                <div className="flex gap-2">
-                  <dt className="font-medium text-gray-700 w-32">Ruolo:</dt>
-                  <dd className="text-gray-900">
-                    <span className={`
-                      px-2 py-1 rounded text-xs font-semibold
-                      ${user.role === 'admin' 
-                        ? 'bg-purple-100 text-purple-800' 
-                        : 'bg-blue-100 text-blue-800'
-                      }
-                    `}>
-                      {user.role.toUpperCase()}
-                    </span>
-                  </dd>
-                </div>
-                
-                {/* Società ID (solo per buyer) */}
-                {user.societaId && (
-                  <div className="flex gap-2">
-                    <dt className="font-medium text-gray-700 w-32">Società ID:</dt>
-                    <dd className="text-gray-900">{user.societaId}</dd>
-                  </div>
-                )}
-              </dl>
-            </div>
-          )}
-
-          {/* Info prossimi step */}
-          <div className="mt-8 p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
-            <p className="text-yellow-800">
-              🚧 <strong>Dashboard in costruzione</strong>
-            </p>
-            <p className="text-sm text-yellow-700 mt-2">
-              Prossimi step: Lista società, CRUD admin, Protected Routes
-            </p>
-          </div>
+          <p className="text-gray-600">
+            {user?.role === 'admin' 
+              ? 'Hai accesso completo a tutte le società.' 
+              : 'Visualizza le tue società in portfolio.'}
+          </p>
         </div>
+
+        {/* Tabella Società - Componente separato! */}
+        <SocietaTable 
+          societa={societa}
+          isLoading={isLoading}
+          error={error}
+        />
+
       </main>
       
     </div>

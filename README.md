@@ -230,15 +230,14 @@ return <div>Ciao {user.username}</div>;
 - [x] Struttura cartelle professionale
 - [x] TypeScript strict mode
 - [x] Axios instance configurato
-
+- [x] TypeScript types da backend schema
+- [x] JWT authentication flow
+- [x] Zustand auth store con persistenza
+- [x] Pagina Login con validazione
+- [x] Dashboard lista società
 
 ### In Sviluppo 🚧
 
-- [ ] TypeScript types da backend schema
-- [ ] JWT authentication flow
-- [ ] Zustand auth store con persistenza
-- [ ] Pagina Login con validazione
-- [ ] Dashboard lista società
 - [ ] CRUD società (admin only)
 - [ ] Form validation con React Hook Form
 - [ ] Protected routes component
