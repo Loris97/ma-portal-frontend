@@ -2,22 +2,25 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import TestAPI from './pages/TestAPI';
+import PrivateRoute from './components/auth/PrivateRoute';  
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Route Login */}
+        {/* Route pubbliche */}
         <Route path="/login" element={<Login />} />
-        
-        {/* Route Dashboard (protetta - per ora accessibile) */}
-        <Route path="/dashboard" element={<Dashboard />} />
-        
-        {/* Route Test API (per debug) */}
         <Route path="/test" element={<TestAPI />} />
         
-        {/* Default: redirect a login */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        {/* Route protette */}
+        <Route path="/dashboard" element={
+          <PrivateRoute>
+            <Dashboard />
+          </PrivateRoute>
+        } />
+        
+        {/* Default */}
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </BrowserRouter>
   );
