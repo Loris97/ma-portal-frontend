@@ -17,34 +17,35 @@ const TOKEN_KEY = import.meta.env.VITE_JWT_TOKEN_KEY || 'ma_portal_token';
 export const useAuthStore = create<AuthState>((set) => ({
   token: localStorage.getItem(TOKEN_KEY),
   user: null,
-  isAuthenticated: false,
+  isAuthenticated: !!localStorage.getItem(TOKEN_KEY),
   isLoading: false,
 
   login: (token, user) => {
     localStorage.setItem(TOKEN_KEY, token);
     set({
-    token: token,
-    user: user,
-    isAuthenticated: true
-  });
+      token: token,
+      user: user,
+      isAuthenticated: true
+    });
   },
 
   logout: () => {
     localStorage.removeItem(TOKEN_KEY);
     set({
-    token: null,
-    user: null,
-    isAuthenticated: false
-  });
+      token: null,
+      user: null,
+      isAuthenticated: false
+    });
   },
 
   setUser: (user) => {
-    set({ user }); 
+    set({ user });
   },
 
   checkAuth: async () => {
     set({ isLoading: true });
     const token = localStorage.getItem(TOKEN_KEY);
+    
     if (!token) {
       set({
         token: null,
@@ -54,20 +55,21 @@ export const useAuthStore = create<AuthState>((set) => ({
       });
       return;
     }
+
     try {
       const { authApi } = await import('../api/authApi');
-    
       const result = await authApi.getMe();
-    
+      
       set({
         token: token,
         user: result.user,
         isAuthenticated: true,
         isLoading: false
       });
-    
+      
     } catch (error) {
       localStorage.removeItem(TOKEN_KEY);
+      
       set({
         token: null,
         user: null,

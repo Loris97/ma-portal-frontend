@@ -3,13 +3,12 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { societaApi } from '../api/societaApi';
 import { Societa } from '../types/api.types';
 import { useAuthStore } from '../store/authStore';
-import { it } from 'zod/locales';
 
 export default function SocietaDetail() {
-  const { id } = useParams<{ id: string }>();  
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuthStore();
-  
+
   const [societa, setSocieta] = useState<Societa | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string>('');
@@ -27,7 +26,7 @@ export default function SocietaDetail() {
         setError('');
         const result = await societaApi.getById(parseInt(id));
         setSocieta(result.data as Societa);
-        
+
       } catch (err: any) {
         setError(
           err.response?.data?.error || 'Errore caricamento società'
@@ -61,7 +60,7 @@ export default function SocietaDetail() {
               Errore
             </h2>
             <p className="text-gray-600 mb-6">{error}</p>
-            <Link 
+            <Link
               to="/dashboard"
               className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
@@ -73,16 +72,38 @@ export default function SocietaDetail() {
     );
   }
 
+  // Handler eliminazione
+  const handleDelete = async () => {
+    if (!id || !societa) return;
+
+    const confirmed = window.confirm(
+      `Sei sicuro di eliminare "${societa.nome}"? Questa azione è irreversibile.`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      await societaApi.delete(parseInt(id));
+      navigate('/dashboard');
+      // (per ora alert, poi toast notification)
+
+    } catch (error: any) {
+      alert(
+        error.response?.data?.error || 'Errore durante eliminazione'
+      );
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
-      
+
       {/* Header */}
       <div className="bg-white shadow-md">
         <div className="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-800">
             📄 Dettaglio Società
           </h1>
-          
+
           {/* Button Indietro */}
           <Link
             to="/dashboard"
@@ -95,10 +116,10 @@ export default function SocietaDetail() {
 
       {/* Content */}
       <main className="max-w-5xl mx-auto px-4 py-8">
-        
+
         {/* Card Principale */}
         <div className="bg-white rounded-lg shadow-md p-8">
-          
+
           {/* Header Card con Nome Società */}
           <div className="flex justify-between items-start mb-6 pb-6 border-b border-gray-200">
             <div>
@@ -119,10 +140,18 @@ export default function SocietaDetail() {
             {/* Action Buttons (solo admin) */}
             {user?.role === 'admin' && (
               <div className="flex gap-3">
-                <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                {/* Button Modifica */}
+                <button
+                  onClick={() => navigate(`/societa/${id}/edit`)}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
                   ✏️ Modifica
                 </button>
-                <button className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+                {/* Button Elimina */}
+                <button
+                  onClick={handleDelete}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                >
                   🗑️ Elimina
                 </button>
               </div>
@@ -131,7 +160,7 @@ export default function SocietaDetail() {
 
           {/* Griglia Info*/}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
+
             {/* Fatturato */}
             <div className="bg-gray-50 p-4 rounded-lg">
               <p className="text-sm text-gray-500 mb-1">Fatturato</p>
@@ -144,7 +173,7 @@ export default function SocietaDetail() {
             <div className="bg-gray-50 p-4 rounded-lg">
               <p className="text-sm text-gray-500 mb-1">EBITDA</p>
               <p className="text-2xl font-bold text-gray-900">
-                 €{societa.ebitda?.toLocaleString('it-IT') || 'N/A'}
+                €{societa.ebitda?.toLocaleString('it-IT') || 'N/A'}
               </p>
             </div>
 
@@ -171,7 +200,7 @@ export default function SocietaDetail() {
 
         </div>
       </main>
-      
+
     </div>
   );
 }

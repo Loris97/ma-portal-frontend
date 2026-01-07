@@ -235,12 +235,12 @@ return <div>Ciao {user.username}</div>;
 - [x] Zustand auth store con persistenza
 - [x] Pagina Login con validazione
 - [x] Dashboard lista società
+- [x] Protected routes component
 
 ### In Sviluppo 🚧
 
 - [ ] CRUD società (admin only)
 - [ ] Form validation con React Hook Form
-- [ ] Protected routes component
 
 
 ### TODO 📋

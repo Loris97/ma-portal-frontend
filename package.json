@@ -1,7 +1,9 @@
 {
   "name": "ma-portal-frontend",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
+  "license": "MIT",
+  "description": "M&A Portal Frontend - React + TypeScript + Tailwind",  
   "type": "module",
   "scripts": {
     "dev": "vite",
